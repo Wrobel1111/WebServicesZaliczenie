@@ -45,13 +45,10 @@ Więc działa przy okazji
 */
 app.get('/wol', async function(req, res)
 {
-	var magicPacket = wol.createMagicPacket('50:EB:F6:58:82:F5');
+	//var magicPacket = wol.createMagicPacket('50:EB:F6:58:82:F5');
 	wol.wake('50:EB:F6:58:82:F5', function(error)
 	{
-		if(error)
-			res.status(523).send();
-		else
-			res.status(200).send('<p>Obudzono</p>');
+		error ? res.status(523).send() : res.status(200).send('<p>Obudzono</p>')
 	});
 })
 
