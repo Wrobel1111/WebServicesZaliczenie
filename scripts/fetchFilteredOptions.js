@@ -1,73 +1,78 @@
 async function FetchFilteredOptions(selectedFilter)
 {
+	var map1 = new Map();
+	const response = await fetch(`http://192.168.1.12:3000/filter?var=kraje`);
+	if (!response.ok)
+	{
+		window.location.href = `http://http.cat/images/${response.status}.jpg`;
+	}
+	else
+	{
+		var json = await response.json();
+		json.forEach(option =>
+		{
+			map1.set(option._id, option.Kraj);
+		})
+	}
+
+	
 	switch (selectedFilter.value)
 	{
 		case "kraj":
-			const response = await fetch(`http://192.168.1.12:3000/filter?var=kraje`);
-			if (!response.ok)
+			var newSelect = document.createElement("select");
+			var newSelectLabel = document.createElement("label");
+			newSelectLabel.for = "filtr-kraje"
+			newSelectLabel.innerText = "Który kraj?";
+			newSelect.id = "filtr-kraje";
+			var newConfirmButton = document.createElement("button");
+			newConfirmButton.id = "filtr-kraje-potwierdz";
+			newConfirmButton.innerText = "Potwierdź";
+			document.getElementById("etap2-wyszukiwania").appendChild(newSelectLabel);
+			document.getElementById("etap2-wyszukiwania").appendChild(document.createElement("br"));
+			document.getElementById("etap2-wyszukiwania").appendChild(newSelect);
+			
+			json.forEach(option =>
 			{
-				window.location.href = `http://http.cat/images/${response.status}.jpg`;
-			}
-			else
+				const newOption = document.createElement("option");
+				newOption.value = option.Kraj;
+				newOption.innerHTML = option.Kraj;
+				document.getElementById("filtr-kraje").appendChild(newOption);
+			});
+			document.getElementById("etap2-wyszukiwania").appendChild(newConfirmButton);
+			document.getElementById("filtr-kraje-potwierdz").addEventListener("click", async (e) =>
 			{
-				var map1 = new Map();
-				var newSelect = document.createElement("select");
-				var newSelectLabel = document.createElement("label");
-				newSelectLabel.for = "filtr-kraje"
-				newSelectLabel.innerText = "Który kraj?";
-				newSelect.id = "filtr-kraje";
-				var newConfirmButton = document.createElement("button");
-				newConfirmButton.id = "filtr-kraje-potwierdz";
-				newConfirmButton.innerText = "Potwierdź";
-				document.getElementById("etap2-wyszukiwania").appendChild(newSelectLabel);
-				document.getElementById("etap2-wyszukiwania").appendChild(document.createElement("br"));
-				document.getElementById("etap2-wyszukiwania").appendChild(newSelect);
-				const json = await response.json();
-				json.forEach(option =>
+				var country = document.getElementById("filtr-kraje").value;
+				const response2 = await fetch(`http://192.168.1.12:3000/filter?var=kraj&value=${country}`);
+				if (!response2.ok)
 				{
-					map1.set(option._id, option.Kraj);
-					const newOption = document.createElement("option");
-					newOption.value = option.Kraj;
-					newOption.innerHTML = option.Kraj;
-					document.getElementById("filtr-kraje").appendChild(newOption);
-				});
-				document.getElementById("etap2-wyszukiwania").appendChild(newConfirmButton);
-				document.getElementById("filtr-kraje-potwierdz").addEventListener("click", async (e) =>
+					window.location.href = `http://http.cat/images/${response2.status}.jpg`;
+				}
+				else
 				{
-					var country = document.getElementById("filtr-kraje").value;
-					const response2 = await fetch(`http://192.168.1.12:3000/filter?var=kraj&value=${country}`);
-					if (!response2.ok)
+					var resultContainer = document.createElement("div");
+					resultContainer.id = "etap2-wyszukiwania-wyniki";
+					document.getElementById("etap2-wyszukiwania").appendChild(resultContainer);
+					//var disclaimer = document.createElement("p");
+					//disclaimer.innerText = "Uwaga: każdy mecz ma znacznie więcej informacji, niż jest wyświetlone. Aby zobaczyć wszystkie, wciśnij przycisk \"Zobacz więcej\" dla danego meczu.";
+					//document.getElementById("etap2-wyszukiwania").appendChild(disclaimer);
+					const json2 = await response2.json(); //This json contains 2 parts, depending whether the team was hosts or guests
+					var idCounter = 0;
+					json2.result2Part1.forEach(element =>
 					{
-						window.location.href = `http://http.cat/images/${response2.status}.jpg`;
-					}
-					else
-					{
-						var resultContainer = document.createElement("div");
-						resultContainer.id = "etap2-wyszukiwania-wyniki";
-						document.getElementById("etap2-wyszukiwania").appendChild(resultContainer);
-						//var disclaimer = document.createElement("p");
-						//disclaimer.innerText = "Uwaga: każdy mecz ma znacznie więcej informacji, niż jest wyświetlone. Aby zobaczyć wszystkie, wciśnij przycisk \"Zobacz więcej\" dla danego meczu.";
-						//document.getElementById("etap2-wyszukiwania").appendChild(disclaimer);
-						const json2 = await response2.json(); //This json contains 2 parts, depending whether the team was hosts or guests
-						var idCounter = 0;
-						json2.result2Part1.forEach(element =>
-						{
-							var newGame = document.createElement("div");
-							newGame.innerHTML =
-							`<p>Data: ${element.Data}</p>
-							<p>Gospodarz: ${map1.get(element['Drużyna 1'])}</p>
-							<p>Gość: ${map1.get(element['Drużyna 2'])}</p>
-							<p>Kategoria: ${element.Kategoria}</p>
-							<p>Wynik: ${element['Liczba goli drużyna 1']}:${element['Liczba goli drużyna 2']}</p>
-							<br><br>
-							`
-							document.getElementById("etap2-wyszukiwania-wyniki").appendChild(newGame);
-							idCounter += 1;
-						})
-
-					}
-				})
-			}
+						var newGame = document.createElement("div");
+						newGame.innerHTML =
+						`<p>Data: ${element.Data}</p>
+						<p>Gospodarz: ${map1.get(element['Drużyna 1'])}</p>
+						<p>Gość: ${map1.get(element['Drużyna 2'])}</p>
+						<p>Kategoria: ${element.Kategoria}</p>
+						<p>Wynik: ${element['Liczba goli drużyna 1']}:${element['Liczba goli drużyna 2']}</p>
+						<br><br>
+						`
+						document.getElementById("etap2-wyszukiwania-wyniki").appendChild(newGame);
+						idCounter += 1;
+					})
+				}
+			})
 			break;
 		
 		case "data":
@@ -138,9 +143,10 @@ async function FetchFilteredOptions(selectedFilter)
 				{
 					let div = document.createElement("div");
 					let currentDate = new Date(year, month, i);
-					console.log(currentDate);
-					div.dataset.dateISO = currentDate.toISOString();
 					div.dataset.dateNormal = currentDate.getDate() + '.' + (currentDate.getMonth() + 1) + '.' + currentDate.getFullYear();
+					let [isoDay,isoMonth,isoYear] = div.dataset.dateNormal.split('.');
+					let utcDate = Date.UTC(isoYear,isoMonth-1,isoDay);
+					div.dataset.dateISO = new Date(utcDate).toISOString();
 					div.innerHTML += i;
 					days.appendChild(div);
 					if (
@@ -162,7 +168,7 @@ async function FetchFilteredOptions(selectedFilter)
 					{
     					const selectedDate = e.target.dataset.dateNormal;
     					selected.innerHTML = `Wybrana data: ${selectedDate}`;
-						tempChosenDate = e.target.attributes['0']
+						tempChosenDate = e.target.attributes['1'].value;
 					});
 				});
 			}
@@ -176,7 +182,6 @@ async function FetchFilteredOptions(selectedFilter)
 					year = year - 1;
 				}
 				month = month - 1;
-				console.log(month);
 				date.setMonth(month);
 				DisplayCalendar();
 				DisplaySelected();
@@ -202,16 +207,36 @@ async function FetchFilteredOptions(selectedFilter)
 			var buttonConfirm = document.createElement("button");
 			buttonConfirm.id = "potwierdz-date";
 			buttonConfirm.innerHTML = 'Potwierdź';
+			buttonConfirm.style = "cursor:pointer";
 			document.getElementById("container").appendChild(buttonConfirm);
 
 			document.getElementById("potwierdz-date").addEventListener("click", async (e) =>
 			{
-				console.log(tempChosenDate)
-				//const response = await fetch(`http://192.168.1.12:3000/filter?var=data&value=${}`);
-				//if (!response.ok)
-				//{
-				//	window.location.href = `http://http.cat/images/${response.status}.jpg`;
-				//}
+				let response = await fetch(`http://192.168.1.12:3000/filter?var=data&value=${tempChosenDate}`);
+				if (!response.ok)
+				{
+					window.location.href = `http://http.cat/images/${response.status}.jpg`;
+				}
+				else
+				{
+					let resultContainer = document.createElement("div");
+					resultContainer.id = "etap2-wyszukiwania-wyniki";
+					document.getElementById("etap2-wyszukiwania").appendChild(resultContainer);
+					let json = await response.json();
+					for (var obj of json)
+					{
+						let newGame = document.createElement("div");
+						newGame.innerHTML =
+						`<p>Data: ${obj.Data}</p>
+						<p>Gospodarz: ${map1.get(obj['Drużyna 1'])}</p>
+						<p>Gość: ${map1.get(obj['Drużyna 2'])}</p>
+						<p>Kategoria: ${obj.Kategoria}</p>
+						<p>Wynik: ${obj['Liczba goli drużyna 1']}:${obj['Liczba goli drużyna 2']}</p>
+						<br><br>
+						`
+						document.getElementById("etap2-wyszukiwania-wyniki").appendChild(newGame);
+					}
+				}
 			})
 			break;
 		default:

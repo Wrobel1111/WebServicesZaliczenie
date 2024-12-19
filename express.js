@@ -48,6 +48,25 @@ app.get('/filter', async function(req, res)
 			break;
 		
 		case "data":
+			var database = client.db("projekt");
+			var valueAsDate = new Date(value);
+			Date.prototype.addDays = function(days)
+			{
+				var date = new Date(this.valueOf());
+				date.setDate(date.getDate() + days);
+				return date;
+			}
+			var dayAfter = valueAsDate.addDays(1);
+			dayAfter = dayAfter.toISOString();
+			var result = await database.collection("mecze 2022").find({"Data": {"$gte": new Date(valueAsDate), "$lt": new Date(dayAfter)}}).toArray();
+			if (Object.keys(result).length == 0)
+			{
+				res.status(404).send()
+			}
+			else
+			{
+				res.status(200).send(result);
+			}
 			break;
 		default:
 			break;
