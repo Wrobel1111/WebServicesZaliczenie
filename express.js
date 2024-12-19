@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoClient = require('mongodb').MongoClient;
 const cors = require('cors');
 const wol = require('wake_on_lan');
+const ObjectId = require('mongodb').ObjectId;
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
@@ -14,22 +15,36 @@ app.use(cors({origin: '*'}));
 
 app.get('/filter', async function(req, res)
 {
-	const filter = req.query.var;
-	const value = req.query.value;
+	var filter = req.query.var;
+	var value = req.query.value;
 	client = new mongoClient("mongodb://192.168.1.12:27017");
+	
 	switch (filter)
 	{
+		case "kraje":
+			var database = client.db("projekt");
+			var result = await database.collection("kraje").find({},{projection: {Kraj:1, _id:1}}).toArray();
+			res.status(200).send(result);
+			break;
 		case "kraj":
-			database = client.db("projekt");
-			result = await database.collection("kraje").find({Kraj: `"${value}"`},{projection: {Kraj:1, _id:0}}).toArray();
-			if (result == null)
-			{
+			var database = client.db("projekt");
+			var result = await database.collection("kraje").find({Kraj: `${value}`},{projection: {_id:1}}).toArray();
+			
+			if (Object.keys(result).length == 0)
 				res.status(404).send();
+
+			var result2Part1 = await database.collection("mecze 2022").find({"Drużyna 1": result[0]._id}).toArray();
+			var result2Part2 = await database.collection("mecze 2022").find({"Drużyna 2": result[0]._id}).toArray();
+			
+			if (Object.keys(result2Part1).length == 0 || Object.keys(result2Part2).length == 0)
+			{
+				res.status(404).send()
 			}
 			else
 			{
-				res.status(200).send(result);
+				res.status(200).send({result2Part1,result2Part2});
 			}
+
 			break;
 		
 		case "data":
