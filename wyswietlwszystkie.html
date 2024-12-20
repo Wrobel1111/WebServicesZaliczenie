@@ -8,6 +8,33 @@
 		<title>
 			WebService Zaliczenie - Strona główna
 		</title>
+		<script type="text/javascript">
+			window.onload = async function()
+			{
+				var leciii = await fetch("http://192.168.1.12:3000/all");
+				if (!leciii.ok)
+				{
+					//window.location.href = `http://http.cat/images/${leciii.status}.jpg`;
+				}
+				else
+				{
+					var json = await leciii.json();
+					json.forEach(element =>
+					{
+						let div = document.createElement("div");
+						let p = document.createElement("p");
+						let br = document.createElement("br");
+						for (let attribute of Object.entries(element))
+						{
+							p.innerText += attribute;
+						}
+						document.getElementById("wysryw").appendChild(p);
+						document.getElementById("wysryw").appendChild(br);
+					});
+				}
+
+			}
+		</script>
 
 	</head>
 	<body>
@@ -35,23 +62,13 @@
 		</div>
 		<div>
 			<h1>
-				Wyświetl mecz
+				Wyświetl wszystkie
 			</h1>
 			<p>
-				Możesz wyszukać dowolny mecz z bazy. Aby to zrobić, wybierz filtr z listy.
+				Robisz to na własną odpowiedzialność
 			</p>
 		</div>
-		<div>
-			<label for="filtr">Filtruj według:</label><br>
-			<select name="filtr" id="filtrMeczy" onchange="FetchFilteredOptions(this)">
-				<option value="" selected disabled hidden>Wybierz opcję...</option>
-				<option value="kraj">Kraj</option>
-				<option value="data">Data</option>
-			</select>
-		</div>
-		<div id="etap2-wyszukiwania">
-
-		</div>
+		<div id="wysryw"></div>
 		
 	</body>
 	<footer>

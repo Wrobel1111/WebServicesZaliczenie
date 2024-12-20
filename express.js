@@ -73,6 +73,14 @@ app.get('/filter', async function(req, res)
 	}
 });
 
+app.get('/all', async function(req, res)
+{
+	let client = new mongoClient("mongodb://192.168.1.12:27017");
+	let database = client.db("projekt");
+	result = await database.collection("mecze").find({}).toArray();
+	res.status(200).send(result);
+});
+
 app.post('/newgame', async function(req, res)
 {
 	let client = new mongoClient("mongodb://192.168.1.12:27017");
