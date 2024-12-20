@@ -7,6 +7,15 @@
 		<title>
 			WebService Zaliczenie - Strona główna
 		</title>
+		<script src="./scripts/addItem.js"></script>
+		<script type="text/javascript">
+			addEventListener("submit", (e) =>
+			{
+				e.preventDefault();
+				//console.log(e);
+				addItem(e.target[0].value, e.target[1].value, e.target[2].value, e.target[3].value, e.target[4].value);
+			})
+		</script>
 	</head>
 	<body>
 		<body>
@@ -31,6 +40,19 @@
 			<h1>
 				Dodaj mecz
 			</h1>
+			<form>
+				<label for="gospodarze">Gospodarze:</label><br>
+				<input type="text" id="gospodarze" name="gospodarze"><br>
+				<label for="goscie">Goście:</label><br>
+				<input type="text" id="goscie" name="goscie"><br>
+				<label for="wynik">Wynik:</label><br>
+				<input type="text" id="wynik-lewa" name="wynik-lewa" style="width: 30px">:<input type="text" id="wynik-prawa" name="wynik-prawa" style="width: 30px"><br>
+				<label for="kategoria">Kategoria:</label>
+				<input type="text" id="kategoria" name="kategoria"><br>
+				<input type="submit">
+
+				<!--Tu można by wsadzić jeszcze pole na inne-->
+			</form>
 		</div>
 		<div>
 			

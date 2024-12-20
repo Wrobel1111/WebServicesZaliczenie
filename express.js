@@ -15,9 +15,9 @@ app.use(cors({origin: '*'}));
 
 app.get('/filter', async function(req, res)
 {
-	var filter = req.query.var;
-	var value = req.query.value;
-	client = new mongoClient("mongodb://192.168.1.12:27017");
+	let filter = req.query.var;
+	let value = req.query.value;
+	let client = new mongoClient("mongodb://192.168.1.12:27017");
 	
 	switch (filter)
 	{
@@ -33,8 +33,8 @@ app.get('/filter', async function(req, res)
 			if (Object.keys(result).length == 0)
 				res.status(404).send();
 
-			var result2Part1 = await database.collection("mecze 2022").find({"Drużyna 1": result[0]._id}).toArray();
-			var result2Part2 = await database.collection("mecze 2022").find({"Drużyna 2": result[0]._id}).toArray();
+			var result2Part1 = await database.collection("mecze").find({"Drużyna 1": result[0]._id}).toArray();
+			var result2Part2 = await database.collection("mecze").find({"Drużyna 2": result[0]._id}).toArray();
 			
 			if (Object.keys(result2Part1).length == 0 || Object.keys(result2Part2).length == 0)
 			{
@@ -58,7 +58,7 @@ app.get('/filter', async function(req, res)
 			}
 			var dayAfter = valueAsDate.addDays(1);
 			dayAfter = dayAfter.toISOString();
-			var result = await database.collection("mecze 2022").find({"Data": {"$gte": new Date(valueAsDate), "$lt": new Date(dayAfter)}}).toArray();
+			var result = await database.collection("mecze").find({"Data": {"$gte": new Date(valueAsDate), "$lt": new Date(dayAfter)}}).toArray();
 			if (Object.keys(result).length == 0)
 			{
 				res.status(404).send()
@@ -72,6 +72,16 @@ app.get('/filter', async function(req, res)
 			break;
 	}
 });
+
+app.post('/newgame', async function(req, res)
+{
+	let client = new mongoClient("mongodb://192.168.1.12:27017");
+	let database = client.db("projekt");
+
+	console.log(req);
+	result = await database.collection("mecze").insertOne({});
+	res.status(201).send()
+})
 
 /*
 To nie jest część projektu, ale przydało mi się do moich własnych potrzeb
