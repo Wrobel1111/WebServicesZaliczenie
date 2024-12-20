@@ -18,10 +18,19 @@ async function addItem(...args)
 		{
 			map1.set(option._id, option.Kraj);
 		})
-		args[0] = getKey(map1, args[0]);
-		args[1] = getKey(map1, args[1]);
+		try
+		{
+			map1.get(args[0]);
+			map1.get(args[1]);
+		}
+		catch (error)
+		{
+			alert("Nie znaleziono kraju");
+			return
+		}
+		
 	}
-	console.log(args[0]);
+	console.log(args);
 	fetch("http://192.168.1.12:3000/newgame",
 	{
 		method: "POST",

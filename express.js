@@ -77,9 +77,10 @@ app.post('/newgame', async function(req, res)
 {
 	let client = new mongoClient("mongodb://192.168.1.12:27017");
 	let database = client.db("projekt");
-
-	console.log(req);
-	result = await database.collection("mecze").insertOne({});
+	let valueAsDate = new Date(req.body[5]);
+	var matchCountry1 = await database.collection("kraje").find({Kraj: `${req.body[0]}`},{projection: {_id:1}}).toArray();
+	var matchCountry2 = await database.collection("kraje").find({Kraj: `${req.body[1]}`},{projection: {_id:1}}).toArray();
+	result = await database.collection("mecze").insertOne({"Drużyna 1": matchCountry1[0]._id, "Drużyna 2": matchCountry2[0]._id, "Liczba goli drużyna 1" : parseInt(req.body[2]), "Liczba goli drużyna 2": parseInt(req.body[3]), "Kategoria": req.body[4], "Data": new Date(valueAsDate)});
 	res.status(201).send()
 })
 
