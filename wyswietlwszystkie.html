@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="./scripts/fetchFilteredOptions.js"></script>
+		<meta charset="utf-8">
+		<meta name="author" content="Kacper Konarzewski">
+		<title>
+			WebService Zaliczenie - Strona główna
+		</title>
+		<script type="text/javascript">
+			window.onload = async function()
+			{
+				var leciii = await fetch("http://192.168.1.12:3000/all");
+				if (!leciii.ok)
+				{
+					//window.location.href = `http://http.cat/images/${leciii.status}.jpg`;
+				}
+				else
+				{
+					var json = await leciii.json();
+					json.forEach(element =>
+					{
+						let div = document.createElement("div");
+						let p = document.createElement("p");
+						let br = document.createElement("br");
+						for (let attribute of Object.entries(element))
+						{
+							p.innerText += attribute;
+						}
+						document.getElementById("wysryw").appendChild(p);
+						document.getElementById("wysryw").appendChild(br);
+					});
+				}
+
+			}
+		</script>
+
+	</head>
+	<body>
+		<div class="pasek-z-boku">
+			<button id="przycisk1">
+				<a href="index.html">
+					Strona główna
+				</a>
+			</button>
+			<button id="przycisk2">
+				<a href="wyswietlmecz.html">
+					Wyświetl mecz
+				</a>
+			</button>
+			<button id="przycisk3">
+				<a href="dodajmecz.html">
+					Dodaj mecz
+				</a>
+			</button>
+			<button id="przycisk4">
+				<a href="wyswietlwszystkie.html">
+					Wyświetl wszystkie
+				</a>
+			</button>
+		</div>
+		<div>
+			<h1>
+				Wyświetl wszystkie
+			</h1>
+			<p>
+				Robisz to na własną odpowiedzialność
+			</p>
+		</div>
+		<div id="wysryw"></div>
+		
+	</body>
+	<footer>
+
+	</footer>
+</html>
