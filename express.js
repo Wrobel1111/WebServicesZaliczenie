@@ -92,6 +92,20 @@ app.post('/newgame', async function(req, res)
 	res.status(201).send()
 })
 
+app.get('/alive', async function (req, res)
+{
+	let client = new mongoClient("mongodb://192.168.1.12:27017");
+	let database = client.db("projekt");
+	try
+	{
+		database.command({ping : 1});
+	}
+	catch (error)
+	{
+		
+	}
+})
+
 /*
 To nie jest część projektu, ale przydało mi się do moich własnych potrzeb
 Więc działa przy okazji
